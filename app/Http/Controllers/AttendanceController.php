@@ -73,14 +73,16 @@ class AttendanceController extends Controller
             'title' => 'Welcome!',
             'date' => date('m/d/Y')
         ];
+        $dtrDate = $request->dtrDate;
+
 
         $today = Carbon::now()->format('n/j/Y');
         $data = $request->data;
         $employee = Employee::where('id', $data)->get()->first();
 
        
-        $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
+        $currentMonth = $dtrDate ? Carbon::create($dtrDate)->format('n') :  Carbon::now()->month;
+        $currentYear = $dtrDate ? Carbon::create($dtrDate)->format('Y') : Carbon::now()->year;
 
         $daysInMonth = Carbon::create($currentYear, $currentMonth, 1)->daysInMonth;
 
@@ -93,7 +95,7 @@ class AttendanceController extends Controller
         ];
             // $date->format('l');
         }
-        $month = Carbon::now()->format('F, Y');
+        $month = $dtrDate ? Carbon::create($dtrDate)->format('F, Y'): Carbon::now()->format('F, Y');
 
 
         // dd($days);

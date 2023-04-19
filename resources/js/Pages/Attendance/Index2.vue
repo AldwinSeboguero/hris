@@ -1,5 +1,6 @@
 <template>
 <v-container fluid class="pl-8 pt-6 pr-8"> 
+  
 <div v-if="$page.props.flash.success" class="temporary-bounce animate-pulse duration-500 ease-out bg-gradient-to-r from-green-600 to-green-500 shadow-lg mx-auto max-w-full text-sm pointer-events-auto bg-clip-padding rounded-md  mb-3" id="alert_message" role="alert" aria-live="assertive" aria-atomic="true" data-mdb-autohide="false">
     <div class="bg-gradient-to-r from-green-600 to-green-500 flex justify-between items-center py-2 px-3 bg-clip-padding  rounded-t-lg rounded-b-lg">
       <span class="font-bold text-white flex items-center">
@@ -102,13 +103,16 @@
                 </v-list>
       
         </v-menu>
+        
+       
 
     </div>
+   
     <!-- /.breadcrumb -->
     </div>
     <!-- <Headers title="PWDs - Registered"/> -->
     
-    <Tables :barangay="barangay" :sitio="sitio" :min_age="range[0]" :max_age="range[1]" :sx="sx" :pension="pension" :annualincome="annualincome" :birthday="birthdate"/>
+    <Tables :searchParent="searchParent" :dateParent="dateParent" :emptypeParent="emptypeParent" @searchUpdated="handleSearchUpdated" @dateUpdated="handleDateUpdated" @emptypeUpdated="handleEmptypeUpdated"/>
     <!-- <h5 class="pull-right hidden-sm hidden-md hidden-xs" v-if="!filterDrawers">
         <button class="btn btn-default btn-xs btn-circle btn-outline filter-section-close" @click.stop="filterDrawers = !filterDrawers"><v-icon small>{{ !filterDrawers ? 'mdi-filter-variant' : 'mdi-chevron-right' }}</v-icon></button>
     </h5> -->
@@ -430,6 +434,19 @@
     </div>
 
     </v-navigation-drawer>
+    <div class="mt-4" v-if="loading">
+    <v-progress-circular indeterminate size="20"></v-progress-circular>
+             <span style="margin-left: 10px; padding-top:20px;">{{loadingStatus}}</span>
+        </div>
+
+        <div class="mt-4" v-if="loadingComplete">
+              <v-icon class=" green--text">mdi-check</v-icon>
+             <span style="margin-left: 10px; padding-top:20px;">{{completeStatus}}</span>
+        </div>
+        <div class="mt-4" v-if="loadingError">
+              <v-icon class=" red--text">mdi-alert</v-icon>
+             <span style="margin-left: 10px; padding-top:20px;">{{errorStatus}}</span>
+        </div>
 </v-container>
 </template>
 <style>
@@ -452,7 +469,7 @@
     import ExportJsonExcel from 'js-export-excel';
     import PDFMerger from 'pdf-merger-js';
     import downloadexcel from "vue-json-excel";
-
+    import { GridLoader } from 'vue-spinners-css';
 
     export default {
         props:{
@@ -466,6 +483,16 @@
         data() {
             
             return {
+              con:true,
+              loadingComplete:false,
+              completeStatus:'',
+              loadingError:false,
+              errorStatus:'',
+
+              loadingStatus:'',
+              emptypeParent: '',
+              searchParent:'',
+              dateParent:'',
               json_fields: {
                   'HCN' : 'hcn',
                   'NAME': 'name',
@@ -503,8 +530,19 @@
             Tables,
             Breadcrumbs,
             Headers,
-            downloadexcel
+            downloadexcel,
+            GridLoader,
 
+        },
+        filters: {
+          formatMonthYear: function (value) {
+            if (value) {
+              const date = new Date(value);
+              const month = date.toLocaleString('en-US', { month: 'long' });
+              const year = date.getFullYear();
+              return `${month}_${year}`;
+            }
+          }
         },
         watch: {
             searchInput: debounce(function (val) {
@@ -554,202 +592,29 @@
         },
         layout: AppLayout,
         methods:{
-          async fetchData(){
-            var datas = {}; 
-            this.excelData = [];
-            // await axios
-            // .get('/constituent/pwd/json', {
-            //   params: { 
-            //     'barangay': 19,
-            //     'sitio': this.sitio,
-            //     'min' : this.min_age,
-            //     'max' : this.max_age,
-            //     'sx': this.sx,
-            //     'birthday':this.birthday,
-            //     'pension':this.pension,
-            //     'annualincome': this.annualincome,
-            //     'search': this.clean(this.search),
-            //   },
-            // }) .then((response) => {
-            //     // this.excelData.push(response.data.constituents.data) ;
-            // //  console.log(response.data.constituents);
-            // // 
-            // this.excelData =[].concat(this.excelData,response.data.constituents);
-            
+          formatMonthYear: function (value) {
+            if (value) {
+              const date = new Date(value);
+              const month = date.toLocaleString('en-US', { month: 'long' });
+              const year = date.getFullYear();
+              return `${month}_${year}`;
+            }
+          },
+          handleDateUpdated(dtrDate) {
+            this.dtrDateParent = dtrDate;
+            console.log('Parent: '+this.dtrDateParent);
+          },
+          handleSearchUpdated(searchs) {
+            this.searchParent = searchs;
+            console.log('Parent: '+this.searchParent);
 
-            // });
+          },
+          handleEmptypeUpdated(emptype) {
+            this.emptypeParent = emptype;
+            console.log('Parent: '+this.emptypeParent);
+
+          },
           
-            var i;
-              var br = this.barangay ? this.barangay : this.barangays;
-              var sit = this.sitio;
-              console.log(this.barangay);
-
-              if(this.barangay == '' && this.sitio == ''){
-              console.log('blank filter')
-
-              for(i of this.barangays){
-                var fileURL ='' ;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                var senior_count = 0;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': i.id,
-                    'sitio': this.sitio,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                console.log('senior_count');
-
-                console.log(senior_count);
-                if(senior_count > 0){
-                  await axios
-                    .get('/constituent/pwd/json', {
-                      params: { 
-                        'barangay': i.id,
-                        'sitio': this.sitio,
-                        'min' : this.min_age,
-                        'max' : this.max_age,
-                        'sx': this.sx,
-                        'birthday':this.birthday,
-                        'pension':this.pension,
-                        'annualincome': this.annualincome,
-                        'search': this.clean(this.search),
-                      },
-                    }) .then((response) => {
-                        // this.excelData.push(response.data.constituents.data) ;
-                    //  console.log(response.data.constituents);
-                    // 
-                    this.excelData =[].concat(this.excelData,response.data.constituents);
-                    
-
-                    });
-                 
-                }
-               
-              }
-              this.loading = false;   
-            }
-
-
-            else if(this.barangay.length != 0 && this.sitio.length == 0){
-             console.log('Barangay Is Not Null')
-             console.log(br)
-
-
-              for(i of br){
-                var fileURL ='' ;
-                var senior_count = 0;
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': [i],
-                    'sitio': this.sitio,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                if(senior_count > 0){
-                  await axios.get('/constituent/pwd/json',{
-                      params: { 
-                      'barangay': [i],
-                      'sitio': this.sitio,
-                      'min' : this.range[0],
-                      'max' : this.range[1],
-                      'sx': this.sx,
-                      'birthday':this.birthdate,
-                      'pension':this.pension,
-                      'annualincome': this.annualincome,
-                      'search': this.clean(this.search),
-                      },
-                      })
-                  .then((response) => {
-                    this.excelData =[].concat(this.excelData,response.data.constituents);
-
-                  });
-                }
-               
-              }
-              
-              }
-            else if(this.sitio.length != 0){
-
-              for(i of sit){
-                var fileURL ='' ;
-                var senior_count = 0;
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': '',
-                    'sitio': i,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                console.log('senior_count');
-
-                console.log(senior_count);
-                if(senior_count > 0){
-                  await axios.get('/constituent/pwd/json',{
-                      params: { 
-                      'barangay': '',
-                      'sitio': i,
-                      'min' : this.range[0],
-                      'max' : this.range[1],
-                      'sx': this.sx,
-                      'birthday':this.birthdate,
-                      'pension':this.pension,
-                      'annualincome': this.annualincome,
-                      'search': this.clean(this.search),
-                      },
-                      })
-                  .then((response) => {
-                    this.excelData =[].concat(this.excelData,response.data.constituents);
-                  });
-                
-
-                }
-                
-              }
-             
-            }
-            console.log(this.excelData)
-            this.excelFilename = "List-of-Unregistered- PWD"+'_'+((Math.floor(Date.now() / 1)))+'.csv'
-
-             
-
-            return this.excelData;
-          },
-          startDownload(){
-            this.loading = true;
-          },
-          finishDownload(){
-            this.loading = false;
-          },
           clean($val) {
           if($val){$val = $val.replace(/ +(?= )/g, "");
           $val = $val.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, " "); // Replaces all spaces with hyphens.
@@ -761,259 +626,94 @@
         },
           async generatePDF(){
               this.loading = true;
+              this.loadingComplete=false;
+              this.loadingError=false;
+
+
+              this.completeStatus='';
+              this.errorStatus='';
+
+              console.log(this.emptypeParent)
               var zip = new JSZip();
               var merger = new PDFMerger();
               var option = {};
-              var i;
-              var br = this.barangay ? this.barangay : this.barangays;
-              var sit = this.sitio;
-              console.log(br);
-
-              if(this.barangay == '' && this.sitio == ''){
-              console.log('blank filter')
-
-              for(i of this.barangays){
-                var fileURL ='' ;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                var senior_count = 0;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': i.id,
-                    'sitio': this.sitio,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                console.log('senior_count');
-
-                console.log(senior_count);
-                if(senior_count > 0){
-                  await axios.get('/constituent/pwd/pdf',{responseType: 'blob',
-                      params: { 
-                      'barangay': i.id,
-                      'sitio': this.sitio,
-                      'min' : this.range[0],
-                      'max' : this.range[1],
-                      'sx': this.sx,
-                      'birthday':this.birthdate,
-                      'pension':this.pension,
-                      'annualincome': this.annualincome,
-                      'search': this.clean(this.search),
-                      },
-                      })
-                  .then((response) => {
-                      fileURL  = new Blob([response.data], {type: 'application/pdf'});
-                  });
-                  await axios.get('/getBarangayName',{
-                      params: { 
-                      'barangay': i.id,
-                      },
-                      })
-                  .then((response) => {
-                      console.log(response.data.barangay[0].name);
-                      // zip.file(response.data.barangay[0].name+".pdf", fileURL);
-                      merger.add(fileURL);
-
-                  });
-                }
-               
-              }
-              await merger.save("List-of-Unregistered- PWD"+'_'+((Math.floor(Date.now() / 1))));
-
-              // zip.generateAsync({type:"blob"})
-              // .then(function(content) {
-              // // see FileSaver.js
-              // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-              // });
-
-              this.loading = false;
-              // this.downloadStatus23 = 'Download Complete!!';
-
-              console.log('finish download');      
-            }
-            else if(this.barangay.length != 0 && this.sitio.length == 0){
-             console.log('Barangay Is Not Null')
-             console.log(br)
-
-
-              for(i of br){
-                var fileURL ='' ;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                var senior_count = 0;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': [i],
-                    'sitio': this.sitio,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                console.log('senior_count');
-
-                console.log(senior_count);
-                if(senior_count > 0){
-                  await axios.get('/constituent/pwd/pdf',{responseType: 'blob',
-                      params: { 
-                      'barangay': [i],
-                      'sitio': this.sitio,
-                      'min' : this.range[0],
-                      'max' : this.range[1],
-                      'sx': this.sx,
-                      'birthday':this.birthdate,
-                      'pension':this.pension,
-                      'annualincome': this.annualincome,
-                      'search': this.clean(this.search),
-                      },
-                      })
-                  .then((response) => {
-                      fileURL  = new Blob([response.data], {type: 'application/pdf'});
-                  });
-                  await merger.add(fileURL);
-
-                }
-               
-              }
-              await merger.save("List-of-Unregistered- PWD"+'_'+((Math.floor(Date.now() / 1))));
-
-              // zip.generateAsync({type:"blob"})
-              // .then(function(content) {
-              // // see FileSaver.js
-              // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-              // });
-
-              this.loading = false;
-              // this.downloadStatus23 = 'Download Complete!!';
-
-              console.log('finish download');    
-              }
-            else if(this.sitio.length != 0){
-
-              for(i of sit){
-                var fileURL ='' ;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                var senior_count = 0;
-                // this.downloadStatus = 'Downloading '+i.name+'....';
-                await axios.get('/constituent/pwd/count',{
-                    params: { 
-                    'barangay': '',
-                    'sitio': i,
-                    'min' : this.range[0],
-                    'max' : this.range[1],
-                    'sx': this.sx,
-                    'birthday':this.birthdate,
-                    'pension':this.pension,
-                    'annualincome': this.annualincome,
-                    'search': this.clean(this.search),
-                    },
-                    })
-                .then((response) => {
-                    senior_count  = response.data.senior_count;
-                });
-                console.log('senior_count');
-
-                console.log(senior_count);
-                if(senior_count > 0){
-                  await axios.get('/constituent/pwd/pdf',{responseType: 'blob',
-                      params: { 
-                      'barangay': '',
-                      'sitio': i,
-                      'min' : this.range[0],
-                      'max' : this.range[1],
-                      'sx': this.sx,
-                      'birthday':this.birthdate,
-                      'pension':this.pension,
-                      'annualincome': this.annualincome,
-                      'search': this.clean(this.search),
-                      },
-                      })
-                  .then((response) => {
-                      fileURL  = new Blob([response.data], {type: 'application/pdf'});
-                  });
-                  await merger.add(fileURL);
-
-                }
-                
-              }
-              await merger.save("List-of-Unregistered- PWD"+'_'+((Math.floor(Date.now() / 1))));
-
-              // zip.generateAsync({type:"blob"})
-              // .then(function(content) {
-              // // see FileSaver.js
-              // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-              // });
-
-              this.loading = false;
-              // this.downloadStatus23 = 'Download Complete!!';
-
-              console.log('finish download');   
-            }
-            // else{
-            //   for(i of this.barangays){
-            //     var countBarangayData = 0;
-
-            //     await axios.get('/getCountByBarangay',{
-            //         params: { 
-            //         'barangay': i.id,
-            //         'sitio': '',
-            //         'age': this.age,
-            //         'search': this.clean(this.search),
-            //         },
-            //     }).then((response) => {
-            //       console.log(response.data)
-            //       countBarangayData = response.data.count;
-            //     });
-                
-            //     if(countBarangayData > 0){
-            //       var fileURL ='' ;
-            //       // this.downloadStatus = 'Downloading '+i.name+'....';
-            //       console.log(i.id);
-            //       await axios.get('/constituent/pwd/pdf',{responseType: 'blob',
-            //           params: { 
-            //           'barangay': i.id,
-            //           'sitio': '',
-            //           'age': this.age,
-            //           'search': this.clean(this.search),
-            //           },
-            //       }).then((response) => {
-            //         fileURL  = new Blob([response.data], {type: 'application/pdf'});
-            //         zip.file(i.name+".pdf", fileURL);
-            //       });
-            //     }
               
-              
-            //   }
-            //   zip.generateAsync({type:"blob"})
-            //   .then(function(content) {
-            //   // see FileSaver.js
-            //   saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-            //   });
-            //   this.loading = false;
-            //   // this.downloadStatus23 = 'Download Complete!!';
+              var count = 1;
+              var countData = 0;
+              var totalData = 0;
+              do {
+                await axios
+                .get(`/attendances/show?page=` + count, {
+                  params: { 
+                    'per_page': 300,
+                    'search': this.clean(this.searchParent),
+                    'emptype' : this.clean(this.emptypeParent),
+                    'dtrDate' : this.dateParent,
+                  },
+                })
+                .then( async (response) => {
+                  // console.log(pageNumber);
+                  // this.filtersSitio = response.data.filtersSitio;
+                  // this.constituents = response.data.employees.data;
+                  // this.current_page= response.data.employees.current_page;
+                  // this.total_pages= response.data.employees.total_pages;
+                  totalData = response.data.employees.total;
 
-            //   console.log('finish download');
+                  if (response.data.employees.current_page <= response.data.employees.total_pages) {
+                    var i;
 
-            // }
+                    for(i of response.data.employees.data){
+                        var fileURL ='' ;
+                        this.loadingStatus = "Genearating PDF Page "+response.data.employees.current_page+' ( '+countData+' out of '+ response.data.employees.total+" )";
+                        this.downloadStatus20 = 'Downloading '+i.name+'....';
+                        console.log(i.id);
+                         await axios.get('/attendances/generate',{responseType: 'blob',
+                          timeout: 0,
+                          params: {data: i.id, dtrDate: this.dtrDateParent}
+                          }).then(async (response) => {
+
+                                    fileURL  =  new Blob([response.data], {type: 'application/pdf'});
+                                   countData++;
+                                    
+                        });
+                        
+                                    zip.file(i.lastname+'_'+i.firstname+'_'+i.employeeno+'_'+(this.dtrDateParent? this.formatMonthYear(this.dtrDateParent) : this.formatMonthYear(Date.now()))+'_'+".pdf", fileURL);
+                                    
+                        }
+                        
+                    this.con=true;
+                    count++;
+                  } else {
+                    this.con=false;
+                    count=1;
+                    // this.loading = false;
+                    if (totalData!=0) {
+                      this.loadingComplete=true;
+                      this.completeStatus="Download Complete!!!"+' ( '+countData+' out of '+ totalData+" )";
+                    }
+                   
+
+                  }
+
+                });
+            } while (this.con);
+            this.loading = false;
+
+            var label = this.emptypeParent;
+            var month = (this.dtrDateParent? this.formatMonthYear(this.dtrDateParent) : this.formatMonthYear(Date.now()));
+            
+            if (totalData != 0) {
+              zip.generateAsync({type:"blob"})
+                                    .then(function(content) {
+                                        // see FileSaver.js
+                                        saveAs(content, "DTR"+'_'+(label ? label+'_': '')+(month ? month+'_': '')+((Math.floor(Date.now() / 1)))+".zip");
+                        });
+            }
+            else{
+              this.loadingError=true;
+              this.errorStatus="No Data Available";
+            }
+           
             
           },
         },

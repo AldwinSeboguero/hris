@@ -2,9 +2,11 @@
   <div>
   <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 text-right bg-title-right">
   <div id="clients-table_filter" class="dataTables_filter">
-    <label>Search: <input type="search" v-model="search" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4" placeholder="" aria-controls="clients-table"></label>
+    <label>Date: <input @input="emitDate" type="date" v-model="dtrDate" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4" placeholder="" aria-controls="clients-table"></label>
+
+    <label>Search: <input @input="emitSearch" type="search" v-model="search" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4" placeholder="" aria-controls="clients-table"></label>
     <label>Type: 
-    <select class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-0" v-model="emptype" width="400">
+    <select @change="emitEmptype" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-0" v-model="emptype" width="400">
           <option value="COS">COS</option>
           <option value="Job Order">Job Order</option>
           <option value="Casual">Casual</option>
@@ -353,6 +355,9 @@ import PDFMerger from 'pdf-merger-js';
         birthday:Array,
         pension:Array,
         annualincome: 0,
+        emptypeParent:'',
+        dateParent:'',
+        searchParent:'',
       },
       watch: {
         barangayy: function (newValue, oldValue) {
@@ -372,6 +377,7 @@ import PDFMerger from 'pdf-merger-js';
               params: { 
                 'per_page': itemsPerPage,
                 'search': this.clean(this.search),
+                'emptype': this.emptype,
               },
             })
             .then((response) => {
@@ -411,9 +417,20 @@ import PDFMerger from 'pdf-merger-js';
 
             });
         }, 300),
+       
         
       },
       methods: {
+        async emitDate() {
+          await this.$emit('dateUpdated', this.dtrDate);
+        },  
+        async emitSearch() {
+          await this.$emit('searchUpdated', this.search);
+
+        },  
+        async emitEmptype() {
+          await this.$emit('emptypeUpdated', this.emptype);
+        },       
         view($val){
           // console.log($item);
           Inertia.get(
@@ -439,7 +456,7 @@ import PDFMerger from 'pdf-merger-js';
                 var count = 0;
               await axios.get('/attendances/generate',{responseType: 'blob',
                       timeout: 0,
-                      params: {data: $val}
+                      params: {data: $val, dtrDate: this.dtrDate}
                     
 
                       }).then((response) => {
@@ -493,6 +510,7 @@ import PDFMerger from 'pdf-merger-js';
                 'per_page': itemsPerPage,
                 'search': this.clean(this.search),
                 'emptype' : this.clean(this.emptype),
+                'dtrDate' : this.dtrDate,
               },
             })
             .then((response) => {
@@ -515,6 +533,7 @@ import PDFMerger from 'pdf-merger-js';
         options: {},
         search: '',
         emptype:'',
+        dtrDate:'',
         // barangay: this.barangay,
         offSet: true,
         constituents: Array,

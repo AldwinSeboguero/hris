@@ -1400,7 +1400,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     sx: String,
     birthday: Array,
     pension: Array,
-    annualincome: 0
+    annualincome: 0,
+    emptypeParent: '',
+    dateParent: '',
+    searchParent: ''
   },
   watch: {
     barangayy: function barangayy(newValue, oldValue) {
@@ -1421,7 +1424,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       axios.get("/attendances/show?page=" + pageNumber, {
         params: {
           'per_page': itemsPerPage,
-          'search': this.clean(this.search)
+          'search': this.clean(this.search),
+          'emptype': this.emptype
         }
       }).then(function (response) {
         console.log(pageNumber);
@@ -1461,6 +1465,57 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }, 300)
   },
   methods: {
+    emitDate: function emitDate() {
+      var _this3 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return _this3.$emit('dateUpdated', _this3.dtrDate);
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    emitSearch: function emitSearch() {
+      var _this4 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return _this4.$emit('searchUpdated', _this4.search);
+              case 2:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    emitEmptype: function emitEmptype() {
+      var _this5 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return _this5.$emit('emptypeUpdated', _this5.emptype);
+              case 2:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
     view: function view($val) {
       // console.log($item);
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_0__.Inertia.get("/senior_citizens/view", {
@@ -1472,11 +1527,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     },
     generate: function generate($val) {
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      var _this6 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
         var merger, option, i, fileURL, count;
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 // this.loadingG12 = true;
                 // var zip = new JSZip();
@@ -1484,12 +1540,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 option = {};
                 fileURL = '';
                 count = 0;
-                _context.next = 6;
+                _context4.next = 6;
                 return axios.get('/attendances/generate', {
                   responseType: 'blob',
                   timeout: 0,
                   params: {
-                    data: $val
+                    data: $val,
+                    dtrDate: _this6.dtrDate
                   }
                 }).then(function (response) {
                   var fileURL = window.URL.createObjectURL(new Blob([response.data], {
@@ -1505,10 +1562,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
               case 6:
               case "end":
-                return _context.stop();
+                return _context4.stop();
             }
           }
-        }, _callee);
+        }, _callee4);
       }))();
     },
     // generate($val){
@@ -1533,7 +1590,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       // Removes special chars.
     },
     nextPage: function nextPage() {
-      var _this3 = this;
+      var _this7 = this;
       console.log(this.max);
       var _this$options3 = this.options,
         page = _this$options3.page,
@@ -1543,18 +1600,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         params: {
           'per_page': itemsPerPage,
           'search': this.clean(this.search),
-          'emptype': this.clean(this.emptype)
+          'emptype': this.clean(this.emptype),
+          'dtrDate': this.dtrDate
         }
       }).then(function (response) {
         console.log(pageNumber);
-        _this3.barangays = response.data.barangays;
-        _this3.sitios = response.data.sitios;
-        _this3.filtersBarangay = response.data.filtersBarangay;
-        _this3.filtersSitio = response.data.filtersSitio;
-        _this3.constituents = response.data.employees.data;
-        _this3.current_page = response.data.employees.current_page;
-        _this3.total_pages = response.data.employees.total_pages;
-        _this3.total = response.data.employees.total;
+        _this7.barangays = response.data.barangays;
+        _this7.sitios = response.data.sitios;
+        _this7.filtersBarangay = response.data.filtersBarangay;
+        _this7.filtersSitio = response.data.filtersSitio;
+        _this7.constituents = response.data.employees.data;
+        _this7.current_page = response.data.employees.current_page;
+        _this7.total_pages = response.data.employees.total_pages;
+        _this7.total = response.data.employees.total;
       });
     }
   },
@@ -1563,6 +1621,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       options: {},
       search: '',
       emptype: '',
+      dtrDate: '',
       // barangay: this.barangay,
       offSet: true,
       constituents: Array,
@@ -1994,6 +2053,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pdf_merger_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! pdf-merger-js */ "./node_modules/pdf-merger-js/browser.js");
 /* harmony import */ var pdf_merger_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(pdf_merger_js__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var vue_json_excel__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vue-json-excel */ "./node_modules/vue-json-excel/dist/vue-json-excel.esm.js");
+/* harmony import */ var vue_spinners_css__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vue-spinners-css */ "./node_modules/vue-spinners-css/dist/vue-spinners-css.common.js");
+/* harmony import */ var vue_spinners_css__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(vue_spinners_css__WEBPACK_IMPORTED_MODULE_11__);
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -2001,6 +2062,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -2023,6 +2085,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   data: function data() {
     return {
+      con: true,
+      loadingComplete: false,
+      completeStatus: '',
+      loadingError: false,
+      errorStatus: '',
+      loadingStatus: '',
+      emptypeParent: '',
+      searchParent: '',
+      dateParent: '',
       json_fields: {
         'HCN': 'hcn',
         'NAME': 'name',
@@ -2060,7 +2131,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     Tables: _Component_Table__WEBPACK_IMPORTED_MODULE_1__["default"],
     Breadcrumbs: _Esitio_Breadcrumb__WEBPACK_IMPORTED_MODULE_2__["default"],
     Headers: _Esitio_Header__WEBPACK_IMPORTED_MODULE_3__["default"],
-    downloadexcel: vue_json_excel__WEBPACK_IMPORTED_MODULE_10__["default"]
+    downloadexcel: vue_json_excel__WEBPACK_IMPORTED_MODULE_10__["default"],
+    GridLoader: vue_spinners_css__WEBPACK_IMPORTED_MODULE_11__.GridLoader
+  },
+  filters: {
+    formatMonthYear: function formatMonthYear(value) {
+      if (value) {
+        var date = new Date(value);
+        var month = date.toLocaleString('en-US', {
+          month: 'long'
+        });
+        var year = date.getFullYear();
+        return "".concat(month, "_").concat(year);
+      }
+    }
   },
   watch: {
     searchInput: lodash_debounce__WEBPACK_IMPORTED_MODULE_4___default()(function (val) {
@@ -2110,274 +2194,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   layout: _Layouts_Layout__WEBPACK_IMPORTED_MODULE_0__["default"],
   methods: {
-    fetchData: function fetchData() {
-      var _this2 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var datas, i, br, sit, _iterator, _step, fileURL, senior_count, _iterator2, _step2, _iterator3, _step3;
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                datas = {};
-                _this2.excelData = [];
-                // await axios
-                // .get('/constituent/pwd/json', {
-                //   params: { 
-                //     'barangay': 19,
-                //     'sitio': this.sitio,
-                //     'min' : this.min_age,
-                //     'max' : this.max_age,
-                //     'sx': this.sx,
-                //     'birthday':this.birthday,
-                //     'pension':this.pension,
-                //     'annualincome': this.annualincome,
-                //     'search': this.clean(this.search),
-                //   },
-                // }) .then((response) => {
-                //     // this.excelData.push(response.data.constituents.data) ;
-                // //  console.log(response.data.constituents);
-                // // 
-                // this.excelData =[].concat(this.excelData,response.data.constituents);
-
-                // });
-                br = _this2.barangay ? _this2.barangay : _this2.barangays;
-                sit = _this2.sitio;
-                console.log(_this2.barangay);
-                if (!(_this2.barangay == '' && _this2.sitio == '')) {
-                  _context.next = 35;
-                  break;
-                }
-                console.log('blank filter');
-                _iterator = _createForOfIteratorHelper(_this2.barangays);
-                _context.prev = 8;
-                _iterator.s();
-              case 10:
-                if ((_step = _iterator.n()).done) {
-                  _context.next = 24;
-                  break;
-                }
-                i = _step.value;
-                fileURL = ''; // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                senior_count = 0; // this.downloadStatus = 'Downloading '+i.name+'....';
-                _context.next = 17;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': i.id,
-                    'sitio': _this2.sitio,
-                    'min': _this2.range[0],
-                    'max': _this2.range[1],
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthdate,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
-              case 17:
-                console.log('senior_count');
-                console.log(senior_count);
-                if (!(senior_count > 0)) {
-                  _context.next = 22;
-                  break;
-                }
-                _context.next = 22;
-                return axios.get('/constituent/pwd/json', {
-                  params: {
-                    'barangay': i.id,
-                    'sitio': _this2.sitio,
-                    'min': _this2.min_age,
-                    'max': _this2.max_age,
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthday,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  // this.excelData.push(response.data.constituents.data) ;
-                  //  console.log(response.data.constituents);
-                  // 
-                  _this2.excelData = [].concat(_this2.excelData, response.data.constituents);
-                });
-              case 22:
-                _context.next = 10;
-                break;
-              case 24:
-                _context.next = 29;
-                break;
-              case 26:
-                _context.prev = 26;
-                _context.t0 = _context["catch"](8);
-                _iterator.e(_context.t0);
-              case 29:
-                _context.prev = 29;
-                _iterator.f();
-                return _context.finish(29);
-              case 32:
-                _this2.loading = false;
-                _context.next = 87;
-                break;
-              case 35:
-                if (!(_this2.barangay.length != 0 && _this2.sitio.length == 0)) {
-                  _context.next = 62;
-                  break;
-                }
-                console.log('Barangay Is Not Null');
-                console.log(br);
-                _iterator2 = _createForOfIteratorHelper(br);
-                _context.prev = 39;
-                _iterator2.s();
-              case 41:
-                if ((_step2 = _iterator2.n()).done) {
-                  _context.next = 52;
-                  break;
-                }
-                i = _step2.value;
-                fileURL = '';
-                senior_count = 0;
-                _context.next = 47;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': [i],
-                    'sitio': _this2.sitio,
-                    'min': _this2.range[0],
-                    'max': _this2.range[1],
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthdate,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
-              case 47:
-                if (!(senior_count > 0)) {
-                  _context.next = 50;
-                  break;
-                }
-                _context.next = 50;
-                return axios.get('/constituent/pwd/json', {
-                  params: {
-                    'barangay': [i],
-                    'sitio': _this2.sitio,
-                    'min': _this2.range[0],
-                    'max': _this2.range[1],
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthdate,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  _this2.excelData = [].concat(_this2.excelData, response.data.constituents);
-                });
-              case 50:
-                _context.next = 41;
-                break;
-              case 52:
-                _context.next = 57;
-                break;
-              case 54:
-                _context.prev = 54;
-                _context.t1 = _context["catch"](39);
-                _iterator2.e(_context.t1);
-              case 57:
-                _context.prev = 57;
-                _iterator2.f();
-                return _context.finish(57);
-              case 60:
-                _context.next = 87;
-                break;
-              case 62:
-                if (!(_this2.sitio.length != 0)) {
-                  _context.next = 87;
-                  break;
-                }
-                _iterator3 = _createForOfIteratorHelper(sit);
-                _context.prev = 64;
-                _iterator3.s();
-              case 66:
-                if ((_step3 = _iterator3.n()).done) {
-                  _context.next = 79;
-                  break;
-                }
-                i = _step3.value;
-                fileURL = '';
-                senior_count = 0;
-                _context.next = 72;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': '',
-                    'sitio': i,
-                    'min': _this2.range[0],
-                    'max': _this2.range[1],
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthdate,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
-              case 72:
-                console.log('senior_count');
-                console.log(senior_count);
-                if (!(senior_count > 0)) {
-                  _context.next = 77;
-                  break;
-                }
-                _context.next = 77;
-                return axios.get('/constituent/pwd/json', {
-                  params: {
-                    'barangay': '',
-                    'sitio': i,
-                    'min': _this2.range[0],
-                    'max': _this2.range[1],
-                    'sx': _this2.sx,
-                    'birthday': _this2.birthdate,
-                    'pension': _this2.pension,
-                    'annualincome': _this2.annualincome,
-                    'search': _this2.clean(_this2.search)
-                  }
-                }).then(function (response) {
-                  _this2.excelData = [].concat(_this2.excelData, response.data.constituents);
-                });
-              case 77:
-                _context.next = 66;
-                break;
-              case 79:
-                _context.next = 84;
-                break;
-              case 81:
-                _context.prev = 81;
-                _context.t2 = _context["catch"](64);
-                _iterator3.e(_context.t2);
-              case 84:
-                _context.prev = 84;
-                _iterator3.f();
-                return _context.finish(84);
-              case 87:
-                console.log(_this2.excelData);
-                _this2.excelFilename = "List-of-Unregistered- PWD" + '_' + Math.floor(Date.now() / 1) + '.csv';
-                return _context.abrupt("return", _this2.excelData);
-              case 90:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[8, 26, 29, 32], [39, 54, 57, 60], [64, 81, 84, 87]]);
-      }))();
+    formatMonthYear: function formatMonthYear(value) {
+      if (value) {
+        var date = new Date(value);
+        var month = date.toLocaleString('en-US', {
+          month: 'long'
+        });
+        var year = date.getFullYear();
+        return "".concat(month, "_").concat(year);
+      }
     },
-    startDownload: function startDownload() {
-      this.loading = true;
+    handleDateUpdated: function handleDateUpdated(dtrDate) {
+      this.dtrDateParent = dtrDate;
+      console.log('Parent: ' + this.dtrDateParent);
     },
-    finishDownload: function finishDownload() {
-      this.loading = false;
+    handleSearchUpdated: function handleSearchUpdated(searchs) {
+      this.searchParent = searchs;
+      console.log('Parent: ' + this.searchParent);
+    },
+    handleEmptypeUpdated: function handleEmptypeUpdated(emptype) {
+      this.emptypeParent = emptype;
+      console.log('Parent: ' + this.emptypeParent);
     },
     clean: function clean($val) {
       if ($val) {
@@ -2389,310 +2226,159 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       // Removes special chars.
     },
     generatePDF: function generatePDF() {
-      var _this3 = this;
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var zip, merger, option, i, br, sit, _iterator4, _step4, fileURL, senior_count, _iterator5, _step5, _iterator6, _step6;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      var _this2 = this;
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var zip, merger, option, count, countData, totalData, label, month;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                _this3.loading = true;
+                _this2.loading = true;
+                _this2.loadingComplete = false;
+                _this2.loadingError = false;
+                _this2.completeStatus = '';
+                _this2.errorStatus = '';
+                console.log(_this2.emptypeParent);
                 zip = new (jszip__WEBPACK_IMPORTED_MODULE_6___default())();
                 merger = new (pdf_merger_js__WEBPACK_IMPORTED_MODULE_9___default())();
                 option = {};
-                br = _this3.barangay ? _this3.barangay : _this3.barangays;
-                sit = _this3.sitio;
-                console.log(br);
-                if (!(_this3.barangay == '' && _this3.sitio == '')) {
-                  _context2.next = 42;
-                  break;
-                }
-                console.log('blank filter');
-                _iterator4 = _createForOfIteratorHelper(_this3.barangays);
-                _context2.prev = 10;
-                _iterator4.s();
+                count = 1;
+                countData = 0;
+                totalData = 0;
               case 12:
-                if ((_step4 = _iterator4.n()).done) {
-                  _context2.next = 28;
+                _context3.next = 14;
+                return axios.get("/attendances/show?page=" + count, {
+                  params: {
+                    'per_page': 300,
+                    'search': _this2.clean(_this2.searchParent),
+                    'emptype': _this2.clean(_this2.emptypeParent),
+                    'dtrDate': _this2.dateParent
+                  }
+                }).then( /*#__PURE__*/function () {
+                  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(response) {
+                    var i, _iterator, _step, fileURL;
+                    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            // console.log(pageNumber);
+                            // this.filtersSitio = response.data.filtersSitio;
+                            // this.constituents = response.data.employees.data;
+                            // this.current_page= response.data.employees.current_page;
+                            // this.total_pages= response.data.employees.total_pages;
+                            totalData = response.data.employees.total;
+                            if (!(response.data.employees.current_page <= response.data.employees.total_pages)) {
+                              _context2.next = 28;
+                              break;
+                            }
+                            _iterator = _createForOfIteratorHelper(response.data.employees.data);
+                            _context2.prev = 3;
+                            _iterator.s();
+                          case 5:
+                            if ((_step = _iterator.n()).done) {
+                              _context2.next = 16;
+                              break;
+                            }
+                            i = _step.value;
+                            fileURL = '';
+                            _this2.loadingStatus = "Genearating PDF Page " + response.data.employees.current_page + ' ( ' + countData + ' out of ' + response.data.employees.total + " )";
+                            _this2.downloadStatus20 = 'Downloading ' + i.name + '....';
+                            console.log(i.id);
+                            _context2.next = 13;
+                            return axios.get('/attendances/generate', {
+                              responseType: 'blob',
+                              timeout: 0,
+                              params: {
+                                data: i.id,
+                                dtrDate: _this2.dtrDateParent
+                              }
+                            }).then( /*#__PURE__*/function () {
+                              var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(response) {
+                                return _regeneratorRuntime().wrap(function _callee$(_context) {
+                                  while (1) {
+                                    switch (_context.prev = _context.next) {
+                                      case 0:
+                                        fileURL = new Blob([response.data], {
+                                          type: 'application/pdf'
+                                        });
+                                        countData++;
+                                      case 2:
+                                      case "end":
+                                        return _context.stop();
+                                    }
+                                  }
+                                }, _callee);
+                              }));
+                              return function (_x2) {
+                                return _ref2.apply(this, arguments);
+                              };
+                            }());
+                          case 13:
+                            zip.file(i.lastname + '_' + i.firstname + '_' + i.employeeno + '_' + (_this2.dtrDateParent ? _this2.formatMonthYear(_this2.dtrDateParent) : _this2.formatMonthYear(Date.now())) + '_' + ".pdf", fileURL);
+                          case 14:
+                            _context2.next = 5;
+                            break;
+                          case 16:
+                            _context2.next = 21;
+                            break;
+                          case 18:
+                            _context2.prev = 18;
+                            _context2.t0 = _context2["catch"](3);
+                            _iterator.e(_context2.t0);
+                          case 21:
+                            _context2.prev = 21;
+                            _iterator.f();
+                            return _context2.finish(21);
+                          case 24:
+                            _this2.con = true;
+                            count++;
+                            _context2.next = 31;
+                            break;
+                          case 28:
+                            _this2.con = false;
+                            count = 1;
+                            // this.loading = false;
+                            if (totalData != 0) {
+                              _this2.loadingComplete = true;
+                              _this2.completeStatus = "Download Complete!!!" + ' ( ' + countData + ' out of ' + totalData + " )";
+                            }
+                          case 31:
+                          case "end":
+                            return _context2.stop();
+                        }
+                      }
+                    }, _callee2, null, [[3, 18, 21, 24]]);
+                  }));
+                  return function (_x) {
+                    return _ref.apply(this, arguments);
+                  };
+                }());
+              case 14:
+                if (_this2.con) {
+                  _context3.next = 12;
                   break;
                 }
-                i = _step4.value;
-                fileURL = ''; // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                senior_count = 0; // this.downloadStatus = 'Downloading '+i.name+'....';
-                _context2.next = 19;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': i.id,
-                    'sitio': _this3.sitio,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
+              case 15:
+                _this2.loading = false;
+                label = _this2.emptypeParent;
+                month = _this2.dtrDateParent ? _this2.formatMonthYear(_this2.dtrDateParent) : _this2.formatMonthYear(Date.now());
+                if (totalData != 0) {
+                  zip.generateAsync({
+                    type: "blob"
+                  }).then(function (content) {
+                    // see FileSaver.js
+                    (0,file_saver__WEBPACK_IMPORTED_MODULE_7__.saveAs)(content, "DTR" + '_' + (label ? label + '_' : '') + (month ? month + '_' : '') + Math.floor(Date.now() / 1) + ".zip");
+                  });
+                } else {
+                  _this2.loadingError = true;
+                  _this2.errorStatus = "No Data Available";
+                }
               case 19:
-                console.log('senior_count');
-                console.log(senior_count);
-                if (!(senior_count > 0)) {
-                  _context2.next = 26;
-                  break;
-                }
-                _context2.next = 24;
-                return axios.get('/constituent/pwd/pdf', {
-                  responseType: 'blob',
-                  params: {
-                    'barangay': i.id,
-                    'sitio': _this3.sitio,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  fileURL = new Blob([response.data], {
-                    type: 'application/pdf'
-                  });
-                });
-              case 24:
-                _context2.next = 26;
-                return axios.get('/getBarangayName', {
-                  params: {
-                    'barangay': i.id
-                  }
-                }).then(function (response) {
-                  console.log(response.data.barangay[0].name);
-                  // zip.file(response.data.barangay[0].name+".pdf", fileURL);
-                  merger.add(fileURL);
-                });
-              case 26:
-                _context2.next = 12;
-                break;
-              case 28:
-                _context2.next = 33;
-                break;
-              case 30:
-                _context2.prev = 30;
-                _context2.t0 = _context2["catch"](10);
-                _iterator4.e(_context2.t0);
-              case 33:
-                _context2.prev = 33;
-                _iterator4.f();
-                return _context2.finish(33);
-              case 36:
-                _context2.next = 38;
-                return merger.save("List-of-Unregistered- PWD" + '_' + Math.floor(Date.now() / 1));
-              case 38:
-                // zip.generateAsync({type:"blob"})
-                // .then(function(content) {
-                // // see FileSaver.js
-                // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-                // });
-
-                _this3.loading = false;
-                // this.downloadStatus23 = 'Download Complete!!';
-
-                console.log('finish download');
-                _context2.next = 110;
-                break;
-              case 42:
-                if (!(_this3.barangay.length != 0 && _this3.sitio.length == 0)) {
-                  _context2.next = 78;
-                  break;
-                }
-                console.log('Barangay Is Not Null');
-                console.log(br);
-                _iterator5 = _createForOfIteratorHelper(br);
-                _context2.prev = 46;
-                _iterator5.s();
-              case 48:
-                if ((_step5 = _iterator5.n()).done) {
-                  _context2.next = 64;
-                  break;
-                }
-                i = _step5.value;
-                fileURL = ''; // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                senior_count = 0; // this.downloadStatus = 'Downloading '+i.name+'....';
-                _context2.next = 55;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': [i],
-                    'sitio': _this3.sitio,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
-              case 55:
-                console.log('senior_count');
-                console.log(senior_count);
-                if (!(senior_count > 0)) {
-                  _context2.next = 62;
-                  break;
-                }
-                _context2.next = 60;
-                return axios.get('/constituent/pwd/pdf', {
-                  responseType: 'blob',
-                  params: {
-                    'barangay': [i],
-                    'sitio': _this3.sitio,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  fileURL = new Blob([response.data], {
-                    type: 'application/pdf'
-                  });
-                });
-              case 60:
-                _context2.next = 62;
-                return merger.add(fileURL);
-              case 62:
-                _context2.next = 48;
-                break;
-              case 64:
-                _context2.next = 69;
-                break;
-              case 66:
-                _context2.prev = 66;
-                _context2.t1 = _context2["catch"](46);
-                _iterator5.e(_context2.t1);
-              case 69:
-                _context2.prev = 69;
-                _iterator5.f();
-                return _context2.finish(69);
-              case 72:
-                _context2.next = 74;
-                return merger.save("List-of-Unregistered- PWD" + '_' + Math.floor(Date.now() / 1));
-              case 74:
-                // zip.generateAsync({type:"blob"})
-                // .then(function(content) {
-                // // see FileSaver.js
-                // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-                // });
-
-                _this3.loading = false;
-                // this.downloadStatus23 = 'Download Complete!!';
-
-                console.log('finish download');
-                _context2.next = 110;
-                break;
-              case 78:
-                if (!(_this3.sitio.length != 0)) {
-                  _context2.next = 110;
-                  break;
-                }
-                _iterator6 = _createForOfIteratorHelper(sit);
-                _context2.prev = 80;
-                _iterator6.s();
-              case 82:
-                if ((_step6 = _iterator6.n()).done) {
-                  _context2.next = 98;
-                  break;
-                }
-                i = _step6.value;
-                fileURL = ''; // this.downloadStatus = 'Downloading '+i.name+'....';
-                console.log(i);
-                senior_count = 0; // this.downloadStatus = 'Downloading '+i.name+'....';
-                _context2.next = 89;
-                return axios.get('/constituent/pwd/count', {
-                  params: {
-                    'barangay': '',
-                    'sitio': i,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  senior_count = response.data.senior_count;
-                });
-              case 89:
-                console.log('senior_count');
-                console.log(senior_count);
-                if (!(senior_count > 0)) {
-                  _context2.next = 96;
-                  break;
-                }
-                _context2.next = 94;
-                return axios.get('/constituent/pwd/pdf', {
-                  responseType: 'blob',
-                  params: {
-                    'barangay': '',
-                    'sitio': i,
-                    'min': _this3.range[0],
-                    'max': _this3.range[1],
-                    'sx': _this3.sx,
-                    'birthday': _this3.birthdate,
-                    'pension': _this3.pension,
-                    'annualincome': _this3.annualincome,
-                    'search': _this3.clean(_this3.search)
-                  }
-                }).then(function (response) {
-                  fileURL = new Blob([response.data], {
-                    type: 'application/pdf'
-                  });
-                });
-              case 94:
-                _context2.next = 96;
-                return merger.add(fileURL);
-              case 96:
-                _context2.next = 82;
-                break;
-              case 98:
-                _context2.next = 103;
-                break;
-              case 100:
-                _context2.prev = 100;
-                _context2.t2 = _context2["catch"](80);
-                _iterator6.e(_context2.t2);
-              case 103:
-                _context2.prev = 103;
-                _iterator6.f();
-                return _context2.finish(103);
-              case 106:
-                _context2.next = 108;
-                return merger.save("List-of-Unregistered- PWD" + '_' + Math.floor(Date.now() / 1));
-              case 108:
-                // zip.generateAsync({type:"blob"})
-                // .then(function(content) {
-                // // see FileSaver.js
-                // saveAs(content, "List-of-Constituents-Aged-59-and-Above-per-Barangay"+'_'+((Math.floor(Date.now() / 1)))+".zip");
-                // });
-
-                _this3.loading = false;
-                // this.downloadStatus23 = 'Download Complete!!';
-
-                console.log('finish download');
-              case 110:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, null, [[10, 30, 33, 36], [46, 66, 69, 72], [80, 100, 103, 106]]);
+        }, _callee3);
       }))();
     }
   }
@@ -6135,7 +5821,29 @@ var render = function render() {
     attrs: {
       id: "clients-table_filter"
     }
-  }, [_c("label", [_vm._v("Search: "), _c("input", {
+  }, [_c("label", [_vm._v("Date: "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.dtrDate,
+      expression: "dtrDate"
+    }],
+    staticClass: "input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4",
+    attrs: {
+      type: "date",
+      placeholder: "",
+      "aria-controls": "clients-table"
+    },
+    domProps: {
+      value: _vm.dtrDate
+    },
+    on: {
+      input: [function ($event) {
+        if ($event.target.composing) return;
+        _vm.dtrDate = $event.target.value;
+      }, _vm.emitDate]
+    }
+  })]), _vm._v(" "), _c("label", [_vm._v("Search: "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -6152,10 +5860,10 @@ var render = function render() {
       value: _vm.search
     },
     on: {
-      input: function input($event) {
+      input: [function ($event) {
         if ($event.target.composing) return;
         _vm.search = $event.target.value;
-      }
+      }, _vm.emitSearch]
     }
   })]), _vm._v(" "), _c("label", [_vm._v("Type: \n    "), _c("select", {
     directives: [{
@@ -6169,7 +5877,7 @@ var render = function render() {
       width: "400"
     },
     on: {
-      change: function change($event) {
+      change: [function ($event) {
         var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
           return o.selected;
         }).map(function (o) {
@@ -6177,7 +5885,7 @@ var render = function render() {
           return val;
         });
         _vm.emptype = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
-      }
+      }, _vm.emitEmptype]
     }
   }, [_c("option", {
     attrs: {
@@ -6668,14 +6376,14 @@ var render = function render() {
     staticClass: "font-semibold"
   }, [_vm._v("PDF")])], 1)], 1)], 1)], 1)]), _vm._v(" "), _c("Tables", {
     attrs: {
-      barangay: _vm.barangay,
-      sitio: _vm.sitio,
-      min_age: _vm.range[0],
-      max_age: _vm.range[1],
-      sx: _vm.sx,
-      pension: _vm.pension,
-      annualincome: _vm.annualincome,
-      birthday: _vm.birthdate
+      searchParent: _vm.searchParent,
+      dateParent: _vm.dateParent,
+      emptypeParent: _vm.emptypeParent
+    },
+    on: {
+      searchUpdated: _vm.handleSearchUpdated,
+      dateUpdated: _vm.handleDateUpdated,
+      emptypeUpdated: _vm.handleEmptypeUpdated
     }
   }), _vm._v(" "), _c("v-navigation-drawer", {
     staticClass: "grey lighten-4",
@@ -7140,7 +6848,37 @@ var render = function render() {
       },
       expression: "annualincome"
     }
-  })], 1)])])], 1);
+  })], 1)])]), _vm._v(" "), _vm.loading ? _c("div", {
+    staticClass: "mt-4"
+  }, [_c("v-progress-circular", {
+    attrs: {
+      indeterminate: "",
+      size: "20"
+    }
+  }), _vm._v(" "), _c("span", {
+    staticStyle: {
+      "margin-left": "10px",
+      "padding-top": "20px"
+    }
+  }, [_vm._v(_vm._s(_vm.loadingStatus))])], 1) : _vm._e(), _vm._v(" "), _vm.loadingComplete ? _c("div", {
+    staticClass: "mt-4"
+  }, [_c("v-icon", {
+    staticClass: "green--text"
+  }, [_vm._v("mdi-check")]), _vm._v(" "), _c("span", {
+    staticStyle: {
+      "margin-left": "10px",
+      "padding-top": "20px"
+    }
+  }, [_vm._v(_vm._s(_vm.completeStatus))])], 1) : _vm._e(), _vm._v(" "), _vm.loadingError ? _c("div", {
+    staticClass: "mt-4"
+  }, [_c("v-icon", {
+    staticClass: "red--text"
+  }, [_vm._v("mdi-alert")]), _vm._v(" "), _c("span", {
+    staticStyle: {
+      "margin-left": "10px",
+      "padding-top": "20px"
+    }
+  }, [_vm._v(_vm._s(_vm.errorStatus))])], 1) : _vm._e()], 1);
 };
 var staticRenderFns = [];
 render._withStripped = true;
