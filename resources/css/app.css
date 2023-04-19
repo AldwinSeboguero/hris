@@ -1,0 +1,33 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+
+@import url('https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css');
+
+@import "vuetify/dist/vuetify.min.css";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+h4 {
+    font-weight: 600;
+}
+.bg-title {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    /* padding: 25px 25px 15px 25px; */
+    overflow: visible;
+}
+
+.bg-title h4 {
+    color: inherit;
+}
+h4{line-height:22px;font-size:18px} 
