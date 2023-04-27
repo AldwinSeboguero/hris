@@ -51,8 +51,10 @@ class AttendanceController extends Controller
     public function getDivisions(){
         // $divisions = Division::all();
         $divisions = Employee::select('division')
-        ->distinct()
-        ->pluck('division');
+                ->distinct()
+                ->orderBy('division', 'asc')
+                ->pluck('division');
+
 
         return response()->json([
             'divisions' => $divisions,
