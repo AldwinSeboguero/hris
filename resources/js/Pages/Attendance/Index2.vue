@@ -18,7 +18,7 @@
 <div class="row">
     <!-- .page title -->
     <div class="col-lg-8 col-md-5 col-sm-6 col-xs-12 bg-title-left">
-        <h4 class="page-title font-semibold row pb-2"><span class="col-sm-12 col-xs-12">Attendances</span>
+        <h4 class="page-title font-semibold font-sans row pb-2"><span class="col-sm-12 col-xs-12">Employees</span>
             <!-- <span class="text-primary p-l-10 m-l-5">{{seniorCitizens}}</span> 
             <span class="font-12 text-muted m-l-5">PWD(s)</span>
             <span class="text-info b-l p-l-10 m-l-5">{{seniorCitizensMale}}</span> 
@@ -112,7 +112,7 @@
     </div>
     <!-- <Headers title="PWDs - Registered"/> -->
     
-    <Tables :searchParent="searchParent" :dateParent="dateParent" :emptypeParent="emptypeParent" @searchUpdated="handleSearchUpdated" @dateUpdated="handleDateUpdated" @emptypeUpdated="handleEmptypeUpdated"/>
+    <Tables :searchParent="searchParent" :dateParent="dateParent" :emptypeParent="emptypeParent" @searchUpdated="handleSearchUpdated" @dateUpdated="handleDateUpdated" @emptypeUpdated="handleEmptypeUpdated" @empDivisionUpdated="handleEmpDivisionUpdated"/>
     <!-- <h5 class="pull-right hidden-sm hidden-md hidden-xs" v-if="!filterDrawers">
         <button class="btn btn-default btn-xs btn-circle btn-outline filter-section-close" @click.stop="filterDrawers = !filterDrawers"><v-icon small>{{ !filterDrawers ? 'mdi-filter-variant' : 'mdi-chevron-right' }}</v-icon></button>
     </h5> -->
@@ -491,6 +491,8 @@
 
               loadingStatus:'',
               emptypeParent: '',
+              empdivisionParent: '',
+
               searchParent:'',
               dateParent:'',
               json_fields: {
@@ -570,7 +572,7 @@
         },
         created(){
             // console.log(this.seniorCitizens);
-            setTimeout(() => document.getElementById("alert_message").classList.add("hidden"), 4000);
+            // setTimeout(() => document.getElementById("alert_message").classList.add("hidden"), 4000);
             // axios.get('/getMaxAge')
             // .then((response)=>{
             //     this.max_age = response.data.max_age;
@@ -614,6 +616,11 @@
             console.log('Parent: '+this.emptypeParent);
 
           },
+          handleEmpDivisionUpdated(empDivision) {
+            this.empdivisionParent = empDivision;
+            console.log('Parent: '+this.empdivisionParent);
+
+          },
           
           clean($val) {
           if($val){$val = $val.replace(/ +(?= )/g, "");
@@ -643,11 +650,13 @@
               var totalData = 0;
               do {
                 await axios
-                .get(`/attendances/show?page=` + count, {
+                .get(`/employees/show?page=` + count, {
                   params: { 
                     'per_page': 300,
                     'search': this.clean(this.searchParent),
                     'emptype' : this.clean(this.emptypeParent),
+                    'empdivision' : this.empdivisionParent,
+
                     'dtrDate' : this.dateParent,
                   },
                 })
@@ -667,7 +676,7 @@
                         this.loadingStatus = "Genearating PDF Page "+response.data.employees.current_page+' ( '+countData+' out of '+ response.data.employees.total+" )";
                         this.downloadStatus20 = 'Downloading '+i.name+'....';
                         console.log(i.id);
-                         await axios.get('/attendances/generate',{responseType: 'blob',
+                         await axios.get('/employees/generate',{responseType: 'blob',
                           timeout: 0,
                           params: {data: i.id, dtrDate: this.dtrDateParent}
                           }).then(async (response) => {
@@ -699,7 +708,7 @@
             } while (this.con);
             this.loading = false;
 
-            var label = this.emptypeParent;
+            var label = this.emptypeParent && this.empdivisionParent ? (this.emptypeParent +'_'+this.empdivisionParent) : (this.emptypeParent ? this.emptypeParent : this.empdivisionParent) ;
             var month = (this.dtrDateParent? this.formatMonthYear(this.dtrDateParent) : this.formatMonthYear(Date.now()));
             
             if (totalData != 0) {

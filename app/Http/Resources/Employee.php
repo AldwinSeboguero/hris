@@ -23,6 +23,8 @@ class Employee extends JsonResource
             'emptype' => $this->emptype,
             'cposition' => $this->cposition,
             'department' => $this->department,
+            'division' => $this->division,
+
 
 
 

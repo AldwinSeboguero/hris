@@ -6,12 +6,20 @@
 
     <label>Search: <input @input="emitSearch" type="search" v-model="search" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4" placeholder="" aria-controls="clients-table"></label>
     <label>Type: 
-    <select @change="emitEmptype" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-0" v-model="emptype" width="400">
+    <select @change="emitEmptype" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-4" v-model="emptype" width="400">
           <option value="COS">COS</option>
           <option value="Job Order">Job Order</option>
           <option value="Casual">Casual</option>
           <option value="Temporary">Temporary</option>
           <option value="Permanent">Permanent</option>
+
+        </select>
+    </label>
+    <label>Division: 
+    <select @change="emitEmpDivision" class="input-sm border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 border-solid mr-0" v-model="empDivision" width="400">
+         
+         
+          <option v-for="division in divisions" :value="division">{{ division }}</option>
 
         </select>
     </label>
@@ -356,6 +364,8 @@ import PDFMerger from 'pdf-merger-js';
         pension:Array,
         annualincome: 0,
         emptypeParent:'',
+        empdivisionParent:'',
+
         dateParent:'',
         searchParent:'',
       },
@@ -373,10 +383,11 @@ import PDFMerger from 'pdf-merger-js';
           const { page, itemsPerPage } = this.options;
           let pageNumber = page;
           axios
-            .get(`/attendances/show?page=` + pageNumber, {
+            .get(`/employees/show?page=` + pageNumber, {
               params: { 
                 'per_page': itemsPerPage,
                 'search': this.clean(this.search),
+                'empdivision' : this.empDivision,
                 'emptype': this.emptype,
               },
             })
@@ -397,10 +408,36 @@ import PDFMerger from 'pdf-merger-js';
           const { page, itemsPerPage } = this.options;
           let pageNumber = page;
           axios
-            .get(`/attendances/show?page=` + pageNumber, {
+            .get(`/employees/show?page=` + pageNumber, {
               params: { 
                 'per_page': itemsPerPage,
                 'emptype': val,
+                'empdivision' : this.empDivision,
+                'search' : this.clean(this.search),
+              },
+            })
+            .then((response) => {
+              console.log(pageNumber);
+              this.barangays = response.data.barangays;
+              this.sitios = response.data.sitios;
+              this.filtersBarangay = response.data.filtersBarangay;
+              this.filtersSitio = response.data.filtersSitio;
+              this.constituents = response.data.employees.data;
+              this.current_page= 1;
+              this.total_pages= response.data.employees.total_pages;
+              this.total= response.data.employees.total;
+
+            });
+        }, 300),
+        empDivision: debounce(function (val) {
+          const { page, itemsPerPage } = this.options;
+          let pageNumber = page;
+          axios
+            .get(`/employees/show?page=` + pageNumber, {
+              params: { 
+                'per_page': itemsPerPage,
+                'empdivision' : val,
+                'emptype': this.emptype,
                 'search' : this.clean(this.search),
               },
             })
@@ -420,6 +457,15 @@ import PDFMerger from 'pdf-merger-js';
        
         
       },
+      created(){
+            // console.log(this.seniorCitizens);
+            // setTimeout(() => document.getElementById("alert_message").classList.add("hidden"), 4000);
+            axios.get('/divisions')
+            .then((response)=>{
+                this.divisions = response.data.divisions;
+               
+            });
+        },
       methods: {
         async emitDate() {
           await this.$emit('dateUpdated', this.dtrDate);
@@ -430,6 +476,9 @@ import PDFMerger from 'pdf-merger-js';
         },  
         async emitEmptype() {
           await this.$emit('emptypeUpdated', this.emptype);
+        },   
+        async emitEmpDivision() {
+          await this.$emit('empDivisionUpdated', this.empDivision);
         },       
         view($val){
           // console.log($item);
@@ -454,7 +503,7 @@ import PDFMerger from 'pdf-merger-js';
 
                 var fileURL ='' ;
                 var count = 0;
-              await axios.get('/attendances/generate',{responseType: 'blob',
+              await axios.get('/employees/generate',{responseType: 'blob',
                       timeout: 0,
                       params: {data: $val, dtrDate: this.dtrDate}
                     
@@ -505,11 +554,12 @@ import PDFMerger from 'pdf-merger-js';
           const { page, itemsPerPage } = this.options;
           let pageNumber = page;
           axios
-            .get(`/attendances/show?page=` + pageNumber, {
+            .get(`/employees/show?page=` + pageNumber, {
               params: { 
                 'per_page': itemsPerPage,
                 'search': this.clean(this.search),
                 'emptype' : this.clean(this.emptype),
+                'empdivision' : this.empDivision,
                 'dtrDate' : this.dtrDate,
               },
             })
@@ -530,9 +580,12 @@ import PDFMerger from 'pdf-merger-js';
 
       data () {
       return {
+        divisions:'',
         options: {},
         search: '',
         emptype:'',
+        empDivision:'',
+
         dtrDate:'',
         // barangay: this.barangay,
         offSet: true,
@@ -566,7 +619,7 @@ import PDFMerger from 'pdf-merger-js';
           { text: 'Middle Name', 
             sortable: false,
             value: 'middlename',class: 'light-green darken-4  white--text', },
-          { text: 'Type', 
+          { text: 'Employee Type', 
             sortable: false,
             value: 'emptype',class: 'light-green darken-4  white--text', },
           { text: 'Position', 
@@ -575,6 +628,10 @@ import PDFMerger from 'pdf-merger-js';
             { text: 'Department', 
             sortable: false,
             value: 'department',class: 'light-green darken-4 white--text', },
+            
+            { text: 'Division', 
+            sortable: false,
+            value: 'division',class: 'light-green darken-4 white--text', },
             
             { text: '', 
             sortable: false,

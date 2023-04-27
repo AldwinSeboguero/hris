@@ -395,9 +395,13 @@ Route::group(['middleware' => ['auth:sanctum','verified']], function()
 
 
    // Attendances
-   Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
-   Route::get('/attendances/show', [AttendanceController::class, 'show'])->name('attendances.show');
-   Route::get('/attendances/generate', [AttendanceController::class, 'pdf'])->name('attendances.generate');
+   Route::get('/employees', [AttendanceController::class, 'index'])->name('attendances.index');
+   Route::get('/employees/show', [AttendanceController::class, 'show'])->name('attendances.show');
+   Route::get('/employees/generate', [AttendanceController::class, 'pdf'])->name('attendances.generate');
+
+   //dvivisons
+   Route::get('/divisions', [AttendanceController::class, 'getDivisions'])->name('attendances.getDivisions');
+
 
 
 });

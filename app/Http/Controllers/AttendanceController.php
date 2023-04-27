@@ -25,8 +25,17 @@ use Illuminate\Support\Arr;
 use App\Models\ConstituentSeniorCitizen;
 
 use App\Models\Employee;
+use App\Models\Attendance;
+use App\Models\Appliedleafe;
+use App\Models\Department;
+use App\Models\Division;
+use App\Models\Holiday;
+
+
+
 use App\Http\Resources\EmployeeCollection;
 use Carbon\Carbon;
+
 
 
 
@@ -39,6 +48,16 @@ class AttendanceController extends Controller
             
         ]);
     }
+    public function getDivisions(){
+        // $divisions = Division::all();
+        $divisions = Employee::select('division')
+        ->distinct()
+        ->pluck('division');
+
+        return response()->json([
+            'divisions' => $divisions,
+            ],200);
+    }
     public function show(RS $request)
 
     {
@@ -46,6 +65,8 @@ class AttendanceController extends Controller
         $per_page =$request->per_page ? $request->per_page : 10;
         $search = $request->search;
         $emptype = $request->emptype;
+        $empdivision = $request->empdivision;
+
 
         
         // dd( Arr::hasAny($pension, function ($value, $key) {
@@ -59,7 +80,12 @@ class AttendanceController extends Controller
         )
         ->when(
             $emptype, function ($query) use ($emptype) {
-                $query->where("emptype", 'LIKE', "%".$emptype."%");
+                $query->where("emptype",$emptype);
+            }
+        )
+        ->when(
+            $empdivision, function ($query) use ($empdivision) {
+                $query->where("division",$empdivision);
             }
         )
         ->paginate($per_page));
@@ -78,23 +104,93 @@ class AttendanceController extends Controller
 
         $today = Carbon::now()->format('n/j/Y');
         $data = $request->data;
-        $employee = Employee::where('id', $data)->get()->first();
+$employee = Employee::where('id', $data)->first();
 
-       
-        $currentMonth = $dtrDate ? Carbon::create($dtrDate)->format('n') :  Carbon::now()->month;
-        $currentYear = $dtrDate ? Carbon::create($dtrDate)->format('Y') : Carbon::now()->year;
+$currentMonth = $dtrDate ? Carbon::create($dtrDate)->format('n') : Carbon::now()->month;
+$currentYear = $dtrDate ? Carbon::create($dtrDate)->format('Y') : Carbon::now()->year;
 
-        $daysInMonth = Carbon::create($currentYear, $currentMonth, 1)->daysInMonth;
+$startDate = Carbon::create($currentYear, $currentMonth, 1)->format('Y-m-d');
+$endDate = Carbon::create($currentYear, $currentMonth, 1)->endOfMonth()->format('Y-m-d');
+$endDate2 = Carbon::create($currentYear, $currentMonth, 1)->endOfMonth()->format('j');
 
-        $days = [];
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $date = Carbon::create($currentYear, $currentMonth, $day);
-            $days[] = 
-              [  'date' => $day,
-                'day' => $date->format('l')
-        ];
-            // $date->format('l');
-        }
+
+$attendance = Attendance::where('employeeno', $employee->employeeno)
+                        ->whereBetween('dateko', [$startDate, $endDate])
+                        ->get()->map(
+                            function($inner){
+                                return [
+                                    'id' => $inner->id,
+                                    'loginam' => $inner->loginam,
+                                    'logoutam' => $inner->logoutam,
+                                    'loginpm' => $inner->loginpm,
+                                    'logoutpm' => $inner->logoutpm,
+                                    'dateko' => $inner->dateko,
+                                    'bypass' => $inner->bypass,
+                                    'bypass1' => $inner->bypass1,
+                                    'bypass2' => $inner->bypass2,
+                                    'bypass3' => $inner->bypass3,
+                                    'remarks' => $inner->remarks,
+
+
+
+            
+                                ];                
+                            }
+                        );
+$days = [];
+for ($day = 1; $day <= $endDate2; $day++) {
+    $date = Carbon::create($currentYear, $currentMonth, $day);
+    $log = $attendance->firstWhere('dateko', $date->format('Y-m-d'));
+
+    $amin = '';
+    $amout = '';
+    $pmin = '';
+    $pmout = '';
+    $bypass = '';
+    $bypass1 = '';
+    $bypass2 = '';
+    $bypass3 = '';
+    $remarks = '';
+
+
+
+    if ($log) {
+        $amin = $log['loginam'];
+        $amout = $log['logoutam'];
+        $pmin = $log['loginpm'];
+        $pmout = $log['logoutpm'];
+        $bypass = $log['bypass'];
+        $bypass1 = $log['bypass1'];
+        $bypass2 = $log['bypass2'];
+        $bypass3 = $log['bypass3'];
+        $remarks = $log['remarks'];
+
+
+
+        // dd($amin);
+
+    }
+    $days[] = [
+        'date' => $day,
+        'day' => $date->format('l'),
+        'amin' => $amin,
+        'amout' => $amout,
+        'pmin' => $pmin,
+        'pmout' => $pmout,
+        'bypass' => $bypass,
+        'bypass1' => $bypass1,
+        'bypass2' => $bypass2,
+        'bypass3' => $bypass3,
+        'remarks' => $remarks,
+        'isHolidayAM' => Holiday::where('holidate',$date)->get()->first() ? Holiday::where('holidate',$date)->get()->first()->holidayam : '',
+        'isHolidayPM' => Holiday::where('holidate',$date)->get()->first() ? Holiday::where('holidate',$date)->get()->first()->holidaypm : '',
+
+
+    ];
+
+}
+// dd($days);
+
         $month = $dtrDate ? Carbon::create($dtrDate)->format('F, Y'): Carbon::now()->format('F, Y');
 
 
@@ -118,6 +214,7 @@ class AttendanceController extends Controller
         //         'isEmptySitio' => false],200); 
         // }
     }
+
 
 
    

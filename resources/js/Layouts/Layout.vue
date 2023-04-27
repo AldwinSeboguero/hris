@@ -383,8 +383,8 @@ export default {
       navigationList: [
         {
           icon: "mdi-home-assistant",
-          text: "Attendances",
-          link: "attendances",
+          text: "Employees",
+          link: "Employees",
           withAccess: true,
         //   withAccess: (this.$page.props.auth.user.roles[0]=='Admin' || this.$page.props.auth.user.roles[0]=='Guest') ? true :false,
         },

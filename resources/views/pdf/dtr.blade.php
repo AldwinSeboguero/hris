@@ -124,20 +124,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                         @foreach ($days as $dailyTimeRecord)
+                @foreach ($days as $dailyTimeRecord)
                             <tr>
                                 <td style="text-align:center; font-size: 9px; ">{{ str_pad($dailyTimeRecord["date"], 2, '0', STR_PAD_LEFT) }}</td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["amin"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["amin"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayAM"] ? 'HOL' :'')))) }}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["amout"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["amout"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayAM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["pmin"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["pmin"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayPM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["pmout"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["pmout"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' :($dailyTimeRecord["isHolidayPM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
@@ -230,20 +230,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                         @foreach ($days as $dailyTimeRecord)
+                            @foreach ($days as $dailyTimeRecord)
                             <tr>
                                 <td style="text-align:center; font-size: 9px; ">{{ str_pad($dailyTimeRecord["date"], 2, '0', STR_PAD_LEFT) }}</td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["amin"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["amin"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayAM"] ? 'HOL' :'')))) }}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["amout"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["amout"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayAM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["pmin"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["pmin"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' : ($dailyTimeRecord["isHolidayPM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;">
-                                {{$dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ' ') }}
+                                {{$dailyTimeRecord["pmout"] ? \Carbon\Carbon::createFromFormat('H:i:s', $dailyTimeRecord["pmout"])->format('h:i A') : ($dailyTimeRecord["day"] == 'Saturday' ? 'SAT' : ($dailyTimeRecord["day"] == 'Sunday' ? 'SUN' : ($dailyTimeRecord["remarks"] ? 'OB' :($dailyTimeRecord["isHolidayPM"] ? 'HOL' :''))))}}
                                 </td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $retired
  * @property string|null $department
  * @property string|null $detailed
+ * @property string|null $division
  * @property string|null $officialtime
  * @property string|null $timetype
  * @property Carbon|null $created_at
@@ -41,7 +42,6 @@ class Employee extends Model
 	];
 
 	protected $fillable = [
-		'id',
 		'employeeno',
 		'lastname',
 		'middlename',
@@ -54,6 +54,7 @@ class Employee extends Model
 		'retired',
 		'department',
 		'detailed',
+		'division',
 		'officialtime',
 		'timetype'
 	];
