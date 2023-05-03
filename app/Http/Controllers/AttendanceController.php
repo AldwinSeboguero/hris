@@ -102,7 +102,7 @@ class AttendanceController extends Controller
             'date' => date('m/d/Y')
         ];
         $dtrDate = $request->dtrDate;
-
+        
 
         $today = Carbon::now()->format('n/j/Y');
         $data = $request->data;
@@ -115,6 +115,9 @@ $startDate = Carbon::create($currentYear, $currentMonth, 1)->format('Y-m-d');
 $endDate = Carbon::create($currentYear, $currentMonth, 1)->endOfMonth()->format('Y-m-d');
 $endDate2 = Carbon::create($currentYear, $currentMonth, 1)->endOfMonth()->format('j');
 
+$regular_days = Carbon::create($currentYear, $currentMonth, 1)->diffInDaysFiltered(function (Carbon $date) {
+    return $date->isWeekday();
+},  Carbon::create($currentYear, $currentMonth, 1)->endOfMonth());
 
 $attendance = Attendance::where('employeeno', $employee->employeeno)
                         ->whereBetween('dateko', [$startDate, $endDate])
@@ -204,6 +207,7 @@ for ($day = 1; $day <= $endDate2; $day++) {
             'days',
             'currentMonth',
             'currentYear',
+            'regular_days',
             'month'
         ))->setPaper('a4', 'portrait');
         // if($sitio){

@@ -8,7 +8,7 @@
                 border-collapse: collapse;
             }
             td, th {
-                border: 1px solid black;
+                border: thin solid black;
                 padding: 5px;
             }
             .left-table-wrapper, .right-table-wrapper {
@@ -49,6 +49,7 @@
                 margin-right: 0;
                 padding-left:0;
             }
+            
         </style>
     </head>
     <body style="margin:-40px -40px; ">
@@ -66,7 +67,7 @@
 
                             </p>
                             <p style="margin-top:-8px;">
-                            <b><span style="text-align:left; font-size: 10px; font-weight: bold;">Goa, Camarines Sur</span></b> <br>
+                            <b><span style="text-align:left; font-size: 10px; font-weight: bold;">Camarines Sur</span></b> <br>
 
                             </p>
                         </td>
@@ -102,10 +103,12 @@
                 <p style="text-align:left; font-size: 12px; margin-top:10px">Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->lastname.' , '.$employee->firstname.' '.$employee->middlename.' '.$employee->suffixname }}<</span></p>
                 <p style="text-align:left; font-size: 12px;">Division:&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->division }}</span></p>
                 <p style="text-align:left; font-size: 12px;">Position:&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->cposition }}</span></p>
-                <p style="text-align:left; font-size: 12px;">Official Time: <span style="font-weight: bold;">{{ $employee->officialtime }}</span></p>
+                <p style="text-align:left; font-size: 12px;">Official Hours for Regular Days: <span style="font-weight: bold;">{{ str_replace('(', '', str_replace(')', '', $employee->officialtime)) }}</span></p>
+                <!-- <p style="text-align:left; font-size: 12px;">Regular Days: <span style="font-weight: bold;">{{ $regular_days}}</span></p> -->
+
             </div>
             <hr>
-            <table>
+            <table style="margin-bottom:1px">
                 <thead style="background-color: lightgray; border: 1px solid black; font-size: 10px;">
                     <tr>
                         <th rowspan="2" style="max-width: 20px;">DAY</th>
@@ -144,16 +147,28 @@
                                 <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
                                 </tr>
                             @endforeach
-                        
+                        <tr>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Tardy=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Under=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Absent=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
+
+                        </tr>
                         
                     </tbody>
                 </table>
+                <hr>
+
                 <p style="text-align:center; font-size: 9px;">I Certify on my honor that the above is true and correct report of the hours of work performed, record of which was made daily of the time of arrival and departure from office.</p>
-                <br>
-                <p style="text-align:center; font-size: 9px;"><u>{{ $employee->firstname.' '.$employee->suffixname.' '.$employee->middlename.' '.$employee->lastname }}</u><br>Employee Signature</p>
+                
+                <p style="text-align:center; font-size: 9px; margin-top: 18px;"><u style="text-align:center; font-size: 10px;">{{ $employee->firstname.' '.$employee->suffixname.' '.$employee->middlename.' '.$employee->lastname }}</u><br>Employee Signature</p>
                 <p style="font-size: 9px;">Verified as to the prescribed office hours.</p>
 
-                <p style="text-align:center; font-size: 9px; margin-top:20px"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>Supervisor / Dept.Head Signature</p>
+                <p style="text-align:center; font-size: 9px; margin-top:18px"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>Supervisor / Dept.Head Signature</p>
                 <hr>
                 <p style="text-align:right; font-size: 9px;">Date: {{$today}}</p>
             </div>
@@ -172,7 +187,7 @@
 
                             </p>
                             <p style="margin-top:-8px;">
-                            <b><span style="text-align:left; font-size: 10px; font-weight: bold;">Goa, Camarines Sur</span></b> <br>
+                            <b><span style="text-align:left; font-size: 10px; font-weight: bold;">Camarines Sur</span></b> <br>
 
                             </p>
                         </td>
@@ -208,10 +223,12 @@
                 <p style="text-align:left; font-size: 12px; margin-top:10px">Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->lastname.' , '.$employee->firstname.' '.$employee->middlename.' '.$employee->suffixname }}<</span></p>
                 <p style="text-align:left; font-size: 12px;">Division:&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->division }}</span></p>
                 <p style="text-align:left; font-size: 12px;">Position:&nbsp;&nbsp;<span style="font-weight: bold;">{{ $employee->cposition }}</span></p>
-                <p style="text-align:left; font-size: 12px;">Official Time: <span style="font-weight: bold;">{{ $employee->officialtime }}</span></p>
+                <p style="text-align:left; font-size: 12px;">Official Hours for Regular Days: <span style="font-weight: bold;">{{ str_replace('(', '', str_replace(')', '',$employee->officialtime)) }}</span></p>
+                <!-- <p style="text-align:left; font-size: 12px;">Regular Days: <span style="font-weight: bold;"></span></p> -->
             </div>
             <hr>
-            <table>
+            <table style="margin-bottom:1px">
+            
                 <thead style="background-color: lightgray; border: 1px solid black; font-size: 10px;">
                     <tr>
                         <th rowspan="2" style="max-width: 20px;">DAY</th>
@@ -251,15 +268,27 @@
                                 </tr>
                             @endforeach
                         
+                            <tr>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Tardy=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Under=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">Absent=</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;">0</td>
+                            <td style="text-align:center; font-size: 9px; font-weight: bold;"></td>
+
+                        </tr>
                         
                     </tbody>
                 </table>
+                <hr>
                 <p style="text-align:center; font-size: 9px;">I Certify on my honor that the above is true and correct report of the hours of work performed, record of which was made daily of the time of arrival and departure from office.</p>
-                <br>
-                <p style="text-align:center; font-size: 9px;"><u>{{ $employee->firstname.' '.$employee->suffixname.' '.$employee->middlename.' '.$employee->lastname }}</u><br>Employee Signature</p>
+                <p style="text-align:center; font-size: 9px; margin-top: 18px;"><u style="text-align:center; font-size: 10px;">{{ $employee->firstname.' '.$employee->suffixname.' '.$employee->middlename.' '.$employee->lastname }}</u><br>Employee Signature</p>
+
                 <p style="font-size: 9px;">Verified as to the prescribed office hours.</p>
 
-                <p style="text-align:center; font-size: 9px; margin-top:20px"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>Supervisor / Dept.Head Signature</p>
+                <p style="text-align:center; font-size: 9px; margin-top:18px"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>Supervisor / Dept.Head Signature</p>
                 <hr>
                 <p style="text-align:right; font-size: 9px;">Date: {{$today}}</p>
             </div>
