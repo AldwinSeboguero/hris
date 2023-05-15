@@ -18,6 +18,8 @@ import moment from 'moment';
 import VueCompositionAPI from '@vue/composition-api'
 import JsonExcel from "vue-json-excel";
 import VueEllipseProgress from 'vue-ellipse-progress';
+import * as faceapi from 'face-api.js';
+Vue.prototype.$faceapi = faceapi;
 // import '@mdi/font/css/materialdesignicons.css';
 Vue.use(VueEllipseProgress);
 Vue.component("downloadExcel", JsonExcel);
